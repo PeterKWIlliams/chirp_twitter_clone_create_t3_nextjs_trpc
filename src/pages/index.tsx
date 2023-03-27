@@ -1,15 +1,21 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignIn, SignInButton } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignIn,
+  SignInButton,
+  useUser,
+} from "@clerk/clerk-react";
 import { SignUp } from "@clerk/clerk-react";
-import { UserButton } from "@clerk/nextjs";
+import { SignOutButton, UserButton } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
+  const user = useUser();
   return (
     <>
       <Head>
@@ -19,16 +25,17 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div>
-          <h1></h1>
+          {!user.isSignedIn && <SignInButton />}
+          {!!user.isSignedIn && <SignOutButton />}
         </div>
+        {/* <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
         <SignedIn>
-          {/* Mount the UserButton component */}
           <UserButton />
         </SignedIn>
 
         <SignedOut>
           <SignInButton />
-        </SignedOut>
+        </SignedOut> */}
       </main>
     </>
   );
