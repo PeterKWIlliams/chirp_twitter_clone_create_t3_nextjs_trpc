@@ -17,6 +17,8 @@ dayjs.extend(relativeTime);
 import { api, RouterOutputs } from "~/utils/api";
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
 
@@ -41,7 +43,7 @@ const PostView = (props: PostWithUser) => {
           ).fromNow()}`}</span>
         </div>
 
-        <span>{post.content}</span>
+        <span className="text-2xl">{post.content}</span>
       </div>
     </div>
   );
@@ -49,6 +51,22 @@ const PostView = (props: PostWithUser) => {
 
 const CreatePostWizard = () => {
   const { user } = useUser();
+  const [input, setInput] = useState("");
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.post.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      ctx.post.getAll.invalidate();
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
 
   console.log(user);
   if (!user) return null;
@@ -64,7 +82,26 @@ const CreatePostWizard = () => {
       <input
         placeholder="Type some emojis"
         className="grow bg-transparent outline-none"
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        disabled={isPosting}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            mutate({ content: input });
+          }
+        }}
       />
+      {input !== "" && (
+        <button onClick={() => mutate({ content: input })} disabled={isPosting}>
+          Post
+        </button>
+      )}
+      {isPosting && (
+        <div className="flex items-center justify-center">
+          <LoadingSpinner size={20} />
+        </div>
+      )}
     </div>
   );
 };
@@ -75,7 +112,7 @@ const Feed = () => {
   if (!data) return <div>something went wrong</div>;
   return (
     <div className="flex flex-col">
-      {[...data, ...data]?.map((fullPost) => (
+      {data.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
@@ -84,11 +121,10 @@ const Feed = () => {
 
 const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn } = useUser();
-  //return empty div if Both arent loaded since user tends to load faster
-
+  //return empty div if user is not loaded
+  if (!userLoaded) return <div></div>;
   //just used to start fetching data early
   api.post.getAll.useQuery();
-  if (!userLoaded) return <div></div>;
 
   return (
     <>
