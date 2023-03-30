@@ -5,4 +5,5 @@
 
 body {
   @apply bg-neutral-900 text-neutral-100;
+  overscroll-behavior: none;
 }
