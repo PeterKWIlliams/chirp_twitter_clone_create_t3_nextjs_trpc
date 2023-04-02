@@ -27,7 +27,7 @@ export const getStaticPaths = () => {
 };
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
-  const { data} = api.post.getById.useQuery({
+  const { data } = api.post.getById.useQuery({
     id,
   });
 
