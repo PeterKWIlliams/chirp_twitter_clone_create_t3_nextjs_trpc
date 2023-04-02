@@ -70,12 +70,19 @@ const CreatePostWizard = () => {
 };
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.post.getAll.useQuery();
-  if (postsLoading) return <LoadingPage />;
 
-  if (!data) return <div>something went wrong</div>;
+  if (postsLoading)
+    return (
+      <div className="flex grow">
+        <LoadingPage />
+      </div>
+    );
+
+  if (!data) return <div>Something went wrong</div>;
+
   return (
-    <div className="flex flex-col">
-      {data.map((fullPost) => (
+    <div className="flex grow flex-col overflow-y-scroll">
+      {[...data, ...data, ...data, ...data].map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
