@@ -15,7 +15,6 @@ model Post {
     createdAt DateTime @default(now())
     content   String   @db.VarChar(255)
     authorId  String
-    comment   String[]
 
     @@index([authorId])
 }
