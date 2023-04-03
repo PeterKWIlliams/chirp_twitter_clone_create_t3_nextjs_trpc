@@ -20,7 +20,7 @@ const ProfileFeed = (props: { userId: string }) => {
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data, isLoading } = api.profile.getUserByUsername.useQuery({
-    username: "peterkwilliams",
+    username,
   });
   if (isLoading) {
     console.log("loading");

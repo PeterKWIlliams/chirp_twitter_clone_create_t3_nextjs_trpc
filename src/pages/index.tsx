@@ -11,6 +11,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
+import { UserButton } from "@clerk/nextjs";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -19,7 +20,7 @@ const CreatePostWizard = () => {
   const { mutate, isLoading: isPosting } = api.post.create.useMutation({
     onSuccess: () => {
       setInput("");
-      ctx.post.getAll.invalidate();
+      void ctx.post.getAll.invalidate();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -35,12 +36,15 @@ const CreatePostWizard = () => {
   if (!user) return null;
   return (
     <div className="flex w-full gap-3">
-      <Image
-        src={user.profileImageUrl}
-        alt="Profile Image"
-        className="h-14 w-14 rounded-full"
-        width={56}
-        height={56}
+      <UserButton
+        appearance={{
+          elements: {
+            userButtonAvatarBox: {
+              width: 56,
+              height: 56,
+            },
+          },
+        }}
       />
       <input
         placeholder="Type some emojis"
