@@ -6,4 +6,4 @@ skills gained
 -familiarity with typescript
 -better working knowledge of Nexjs page routing
 -Learn authentication with using clerk
--Ability to use trpc to perf
+
